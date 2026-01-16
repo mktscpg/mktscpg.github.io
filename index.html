@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drive SCMPG – Unified Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        /* ============================
+           GLOBAL STYLES & VARIABLES
+        ============================ */
+        :root {
+            --bg-body: #0f172a;
+            --bg-gradient: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-input: #151e2e;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            margin: 0; 
+            min-height: 100vh; 
+            background: var(--bg-body); 
+            background-image: var(--bg-gradient);
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            padding: 40px 0;
+        }
+
+        .container { 
+            width: 94%; 
+            max-width: 950px; 
+            box-sizing: border-box; 
+        }
+
+        /* CARD STYLES */
+        .card { 
+            background: var(--bg-card); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px; 
+            border-radius: 24px; 
+            border: var(--glass-border); 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); 
+            margin-bottom: 30px;
+        }
+
+        /* HEADER */
+        .header-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        h1 { 
+            margin: 0; 
+            color: var(--text-main); 
+            font-size: 28px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+        }
+        h1 span { color: var(--primary); font-weight: 300; font-size: 0.8em; }
+
+        h2 { font-size: 18px; margin-top: 0; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+
+        /* BUTTONS & INPUTS */
+        button { 
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button:hover:not(:disabled) { 
+            background: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+        button:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
+        button.secondary { background: #334155; }
+        
+        select, input[type="text"], input[type="file"] { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border); 
+            background: var(--bg-input); 
+            color: white; 
+            font-size: 14px; 
+            box-sizing: border-box; 
+            outline: none;
+            margin-bottom: 10px;
+        }
+        input[type="file"] { padding: 10px; cursor: pointer; }
+        input[type="file"]::file-selector-button {
+            background: var(--border);
+            color: white; border: none; padding: 5px 10px; border-radius: 6px; margin-right: 10px; cursor: pointer;
+        }
+        label { 
+            display: block; font-size: 11px; margin: 15px 0 6px; 
+            color: var(--text-muted); text-transform: uppercase; font-weight: 700; 
+        }
+
+        /* GRID LAYOUT FOR TOOLS */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+        section { 
+            background: rgba(15, 23, 42, 0.3); 
+            padding: 25px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border); 
+        }
+
+        /* ============================
+           GOOGLE DRIVE SPECIFIC STYLES
+        ============================ */
+        #driveBreadcrumb { font-size: 13px; color: var(--text-muted); margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        #driveBreadcrumb a { color: var(--primary); text-decoration: none; font-weight: 600; margin: 0 5px; }
+        #driveList { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; }
+        #driveList li { 
+            padding: 12px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            cursor: pointer; 
+            display: flex; align-items: center; gap: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        #driveList li:hover { background: rgba(255,255,255,0.08); }
+        #driveList li a { color: var(--text-main); text-decoration: none; flex-grow: 1; }
+
+        /* ============================
+           UPLOAD TOOLS SPECIFIC STYLES
+        ============================ */
+        details { margin-bottom: 25px; background: rgba(0, 0, 0, 0.2); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        details summary { padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        .instructions-content { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-muted); border-top: 1px solid var(--border); }
+        .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+        .checkbox-wrapper input { width: auto; margin-right: 12px; transform: scale(1.2); }
+        .checkbox-wrapper.disabled { opacity: 0.5; pointer-events: none; }
+        
+        .progress-bar { height: 10px; background: rgba(255,255,255,0.02); border-radius: 99px; margin: 20px 0 10px; overflow: hidden; display: none; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%); width: 0%; transition: width 0.3s ease-out; }
+        
+        .status { font-size: 12px; text-align: center; color: var(--text-muted); min-height: 1.5em; font-family: monospace; margin-top: 10px; }
+        
+        .result-box { margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3); display: none; word-break: break-all; font-size: 12px; text-align: center; }
+        .result-box a { color: var(--success); text-decoration: none; border-bottom: 1px dotted; }
+
+        /* ============================
+           FOOTER LINK
+        ============================ */
+        .footer-links {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            opacity: 0.6;
+            transition: all 0.2s;
+            border-bottom: 1px dotted transparent;
+        }
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header-brand">
+        <div style="font-size: 40px;">📁</div> 
+        <h1>DRIVE SCMPG <span>Unified v2.0</span></h1>
+    </div>
+
+    <details>
+        <summary>ℹ️ Instruções do Sistema</summary>
+        <div class="instructions-content">
+            <p><strong>1. Google Drive Browser:</strong> Use para navegar nos arquivos internos da instituição. Requer login com conta Google autorizada.</p>
+            <p><strong>2. Upload Externo (Catbox/Litterbox):</strong> Use para enviar arquivos grandes para compartilhamento público temporário.</p>
+            <ul>
+                <li><strong>Fragmentação Segura:</strong> Obrigatória para arquivos >200MB ou conexões instáveis.</li>
+                <li><strong>Reconstituição:</strong> Use o link <code>.json</code> gerado para baixar arquivos fragmentados.</li>
+            </ul>
+        </div>
+    </details>
+
+    <div class="card">
+        <h2>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+            Navegador Google Drive (OAuth)
+        </h2>
+
+        <div style="text-align:center; margin: 20px 0;">
+            <button id="loginBtn" style="max-width:200px;">Sign in with Google</button>
+            <button id="logoutBtn" class="secondary" style="display:none; max-width:200px;">Logout</button>
+        </div>
+
+        <div id="driveUI" style="display:none">
+            <div id="driveBreadcrumb"></div>
+            <ul id="driveList"></ul>
+        </div>
+
+        <div class="status" id="driveStatus"></div>
+    </div>
+
+    <div class="card">
+        <div class="grid">
+            <section>
+                <h2>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Enviar (Hospedagem Externa)
+                </h2>
+                
+                <label>Expiração</label>
+                <select id="mode">
+                    <option value="24h">24 Horas</option>
+                    <option value="72h">72 Horas</option>
+                    <option value="none">Permanente (< 200MB)</option>
+                </select>
+
+                <label>Arquivo</label>
+                <input id="fileInput" type="file">
+
+                <label class="checkbox-wrapper" id="fragWrapper">
+                    <input id="experimentalMode" type="checkbox">
+                    <span>Fragmentação Segura</span>
+                </label>
+
+                <button id="submitBtn">INICIAR UPLOAD</button>
+
+                <div id="pBar" class="progress-bar"><div id="pFill" class="progress-fill"></div></div>
+                <div id="uploadStatus" class="status"></div>
+
+                <div id="resultBox" class="result-box">
+                    <strong>Link Gerado:</strong><br>
+                    <a id="downloadLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+                </div>
+            </section>
+
+            <section>
+                <h2>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Reconstituir
+                </h2>
+                <label>URL do Manifesto (.json)</label>
+                <input id="manifestURL" type="text" placeholder="https://.../arquivo.json">
+
+                <button id="rebuildBtn" class="secondary">BAIXAR E JUNTAR</button>
+
+                <div id="pBarRebuild" class="progress-bar" style="margin-top:12px"><div id="pFillRebuild" class="progress-fill"></div></div>
+                <div id="rebuildStatus" class="status"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href="privacy.html" target="_blank">Política de Privacidade e Termos de Uso</a>
+    </div>
+
+</div>
+
+<script>
+/* PART A: GOOGLE DRIVE LOGIC 
+*/
+const GOOGLE_CLIENT_ID = "972952328868-rkbaaru41ecm2mh68oi72r9sldl9ops6.apps.googleusercontent.com";
+const GOOGLE_ROOT_ID = "1AVMzzfOBwFOngzdZSnuzE9cNsBkpvDqh";
+
+let accessToken = null;
+let tokenClient = null;
+let folderStack = [];
+
+// Initialize Google Auth on Load
+window.onload = () => {
+  // Initialize Google Drive Client
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: "https://www.googleapis.com/auth/drive.readonly",
+    callback: tokenResponse => {
+      accessToken = tokenResponse.access_token;
+      document.getElementById("loginBtn").style.display = "none";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      document.getElementById("driveUI").style.display = "block";
+      folderStack = [{ id: GOOGLE_ROOT_ID, name: "Root" }];
+      loadFolder(GOOGLE_ROOT_ID);
+    }
+  });
+
+  // Check upload fragmentation toggle
+  toggleFragmentOption();
+};
+
+document.getElementById("loginBtn").onclick = () => {
+  tokenClient.requestAccessToken();
+};
+
+document.getElementById("logoutBtn").onclick = () => {
+  accessToken = null;
+  folderStack = [];
+  document.getElementById("driveUI").style.display = "none";
+  document.getElementById("loginBtn").style.display = "inline-block";
+  document.getElementById("logoutBtn").style.display = "none";
+  document.getElementById("driveStatus").textContent = "Logged out.";
+};
+
+async function loadFolder(folderId){
+  document.getElementById("driveStatus").textContent = "Loading folder...";
+  const q = encodeURIComponent(`'${folderId}' in parents and trashed=false`);
+  try {
+      const res = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,webViewLink,iconLink)`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if(!res.ok) throw new Error("Auth Error");
+      const data = await res.json();
+      renderList(data.files || []);
+      renderBreadcrumb();
+      document.getElementById("driveStatus").textContent = "";
+  } catch(e) {
+      document.getElementById("driveStatus").textContent = "Erro ao carregar pasta. Faça login novamente.";
+  }
+}
+
+function renderList(files){
+  const list = document.getElementById("driveList");
+  list.innerHTML = "";
+  if(files.length === 0) list.innerHTML = "<li style='justify-content:center; color:gray'>Pasta vazia</li>";
+
+  files.forEach(f => {
+    const li = document.createElement("li");
+    if (f.mimeType === "application/vnd.google-apps.folder") {
+      li.innerHTML = `📁 <strong>${f.name}</strong>`;
+      li.onclick = () => {
+        folderStack.push({ id: f.id, name: f.name });
+        loadFolder(f.id);
+      };
+    } else {
+      li.innerHTML = `📄 <a href="${f.webViewLink}" target="_blank">${f.name}</a>`;
+    }
+    list.appendChild(li);
+  });
+}
+
+function renderBreadcrumb(){
+  const bc = document.getElementById("driveBreadcrumb");
+  bc.innerHTML = folderStack.map((f, i) =>
+    `<a href="#" data-i="${i}">${f.name}</a>`
+  ).join(" / ");
+
+  bc.querySelectorAll("a").forEach(a => {
+    a.onclick = e => {
+      e.preventDefault();
+      const i = +a.dataset.i;
+      folderStack = folderStack.slice(0, i + 1);
+      loadFolder(folderStack[i].id);
+    };
+  });
+}
+
+/* PART B: UPLOAD & RECONSTITUTION LOGIC 
+*/
+const CHUNK_SIZE = 100 * 1024 * 1024; // 100MB
+const SLEEP_TIME = 4000; 
+const MAX_RETRIES = 3;
+
+const getApi = mode => mode === 'none' ? 'https://catbox.moe/user/api.php' : 'https://litterbox.catbox.moe/resources/internals/api.php';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const submitBtn = document.getElementById('submitBtn');
+const uploadStatus = document.getElementById('uploadStatus');
+const pFill = document.getElementById('pFill');
+const modeSelect = document.getElementById('mode');
+const fragCheckbox = document.getElementById('experimentalMode');
+const fragWrapper = document.getElementById('fragWrapper');
+
+function toggleFragmentOption() {
+    if (modeSelect.value === 'none') {
+        fragCheckbox.checked = false;
+        fragCheckbox.disabled = true;
+        fragWrapper.classList.add('disabled');
+    } else {
+        fragCheckbox.disabled = false;
+        fragWrapper.classList.remove('disabled');
+    }
+}
+modeSelect.addEventListener('change', toggleFragmentOption);
+
+submitBtn.onclick = async () => {
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return alert('Selecione um arquivo.');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "ENVIANDO...";
+    document.getElementById('pBar').style.display = 'block';
+    document.getElementById('resultBox').style.display = 'none';
+    pFill.style.width = '0%';
+    uploadStatus.textContent = '';
+
+    if (document.getElementById('experimentalMode').checked) {
+        uploadInChunks(file);
+    } else {
+        uploadNormal(file);
+    }
+};
+
+async function uploadNormal(file) {
+    const fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', file);
+    const mode = modeSelect.value;
+    if (mode !== 'none') fd.append('time', mode);
+
+    uploadStatus.textContent = "Enviando arquivo único...";
+
+    try {
+        const res = await fetch(getApi(mode), { method: 'POST', body: fd });
+        const url = await res.text();
+        if (url.startsWith('http')) showResult(url.trim());
+        else throw new Error(url);
+    } catch (e) {
+        alert("Erro no upload: " + e.message);
+        uploadStatus.textContent = "Erro.";
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "INICIAR UPLOAD";
+    }
+}
+
+async function uploadInChunks(file) {
+    const mode = modeSelect.value;
+    const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+    let chunksUrls = [];
+
+    for (let i = 0; i < totalParts; i++) {
+        let success = false;
+        let attempt = 0;
+        while (!success && attempt < MAX_RETRIES) {
+            try {
+                uploadStatus.textContent = `Parte ${i + 1}/${totalParts} (Tentativa ${attempt + 1})...`;
+                const slice = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                
+                const fd = new FormData();
+                fd.append('reqtype', 'fileupload');
+                fd.append('fileToUpload', slice, `${file.name}.p${i+1}`);
+                if (mode !== 'none') fd.append('time', mode);
+
+                const res = await fetch(getApi(mode), { method: 'POST', body: fd });
+                const url = await res.text();
+
+                if (url.trim().startsWith('http')) {
+                    chunksUrls.push(url.trim());
+                    success = true;
+                    pFill.style.width = ((i + 1) / totalParts * 100) + '%';
+                    if (i < totalParts - 1) {
+                        uploadStatus.textContent = `Pausa para estabilização...`;
+                        await sleep(SLEEP_TIME);
+                    }
+                } else {
+                    throw new Error("Resposta inválida");
+                }
+            } catch (e) {
+                attempt++;
+                uploadStatus.textContent = `Erro parte ${i+1}. Retry em 5s...`;
+                await sleep(5000);
+            }
+        }
+        if (!success) {
+            alert(`Falha crítica na parte ${i+1}. Upload cancelado.`);
+            submitBtn.disabled = false;
+            submitBtn.textContent = "TENTAR NOVAMENTE";
+            return;
+        }
+    }
+
+    uploadStatus.textContent = "Gerando manifesto...";
+    const manifestBlob = new Blob([JSON.stringify({ filename: file.name, chunks: chunksUrls })], { type: 'application/json' });
+    const fdM = new FormData();
+    fdM.append('reqtype', 'fileupload');
+    fdM.append('fileToUpload', manifestBlob, `${file.name}.json`);
+    if (mode !== 'none') fdM.append('time', mode);
+
+    const resM = await fetch(getApi(mode), { method: 'POST', body: fdM });
+    showResult(await resM.text());
+    uploadStatus.textContent = "Concluído!";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "INICIAR UPLOAD";
+}
+
+function showResult(url) {
+    const rb = document.getElementById('resultBox');
+    const dl = document.getElementById('downloadLink');
+    dl.href = url.trim();
+    dl.textContent = url.trim();
+    rb.style.display = 'block';
+    pFill.style.width = '100%';
+}
+
+// Rebuild Logic
+document.getElementById('rebuildBtn').onclick = async () => {
+    const url = document.getElementById('manifestURL').value.trim();
+    if (!url) return alert("Insira a URL do arquivo .json");
+
+    const btn = document.getElementById('rebuildBtn');
+    const status = document.getElementById('rebuildStatus');
+    const pBar = document.getElementById('pBarRebuild');
+    const pFill = document.getElementById('pFillRebuild');
+    
+    btn.disabled = true;
+    pBar.style.display = 'block';
+    pFill.style.width = '0%';
+    status.textContent = "Buscando manifesto...";
+
+    try {
+        const mfRes = await fetch(url);
+        if(!mfRes.ok) throw new Error("Manifesto não encontrado");
+        const manifest = await mfRes.json();
+        
+        const total = manifest.chunks.length;
+        const buffers = new Array(total);
+
+        for (let i = 0; i < total; i++) {
+            status.textContent = `Baixando parte ${i+1} de ${total}...`;
+            const partRes = await fetch(manifest.chunks[i]);
+            if (!partRes.ok) throw new Error("Erro na parte " + i);
+            buffers[i] = await partRes.arrayBuffer();
+            pFill.style.width = ((i+1)/total * 100) + '%';
+            await sleep(200);
+        }
+
+        status.textContent = "Montando arquivo...";
+        const blob = new Blob(buffers, { type: 'application/octet-stream' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = manifest.filename || 'download.bin';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        status.textContent = "Download iniciado!";
+    } catch (e) {
+        status.textContent = "Erro: " + e.message;
+    } finally {
+        btn.disabled = false;
+    }
+};
+</script>
+</body>
+</html>

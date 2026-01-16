@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Política de Privacidade – Drive SCMPG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================
+           SHARED THEME STYLES
+        ============================ */
+        :root {
+            --bg-body: #0f172a;
+            --bg-gradient: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            margin: 0; 
+            min-height: 100vh; 
+            background: var(--bg-body); 
+            background-image: var(--bg-gradient);
+            color: var(--text-main); 
+            display: flex; 
+            justify-content: center; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 800px; 
+        }
+
+        /* CARD STYLES */
+        .card { 
+            background: var(--bg-card); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 40px; 
+            border-radius: 24px; 
+            border: var(--glass-border); 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); 
+        }
+
+        /* TYPOGRAPHY */
+        h1 { 
+            margin: 0 0 10px 0; 
+            color: var(--text-main); 
+            font-size: 32px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+        }
+        h1 span { color: var(--primary); }
+        
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 40px;
+            display: block;
+        }
+
+        h2 { 
+            font-size: 18px; 
+            margin-top: 30px; 
+            margin-bottom: 15px;
+            color: var(--text-main); 
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        p, li { 
+            font-size: 15px; 
+            line-height: 1.7; 
+            color: var(--text-muted); 
+            margin-bottom: 15px;
+        }
+
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+
+        strong { color: var(--text-main); font-weight: 600; }
+
+        /* BUTTONS */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+        .btn-back:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--border);
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <a href="index.html" class="btn-back">
+        ← Voltar ao Sistema
+    </a>
+
+    <div class="card">
+        <h1>Política de <span>Privacidade</span></h1>
+        <span class="subtitle">Última atualização: 15 de Janeiro de 2026</span>
+
+        <p>Esta Política de Privacidade descreve como o sistema <strong>Drive SCMPG</strong> coleta, usa e compartilha suas informações ao utilizar nossos serviços de navegação de arquivos e upload.</p>
+
+        <h2>1. Uso de Dados do Google (OAuth)</h2>
+        <p>O Drive SCMPG utiliza os serviços de API do Google para permitir que você visualize seus arquivos. O uso das informações recebidas das APIs do Google segue a <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" style="color:var(--primary)">Política de Dados do Usuário dos Serviços de API do Google</a>, incluindo os requisitos de uso limitado.</p>
+        
+        <ul>
+            <li><strong>Acesso:</strong> Solicitamos apenas o escopo <code>drive.readonly</code>. Isso nos permite listar nomes de arquivos, IDs e links de visualização.</li>
+            <li><strong>Armazenamento:</strong> Não armazenamos seus arquivos ou tokens de acesso em nossos servidores. Toda a comunicação ocorre diretamente entre o seu navegador e os servidores do Google.</li>
+            <li><strong>Compartilhamento:</strong> Seus dados do Google Drive não são compartilhados com terceiros, exceto quando você explicitamente utiliza a função de "Upload Externo" (veja item 3).</li>
+        </ul>
+
+        <h2>2. Coleta de Informações</h2>
+        <p>Este sistema opera principalmente como uma ferramenta "Client-Side" (executada no seu navegador). Não possuímos banco de dados próprio para retenção de dados pessoais.</p>
+        <p>As únicas informações retidas temporariamente (na memória do seu navegador ou LocalStorage) são:</p>
+        <ul>
+            <li>Tokens de autenticação (para manter você logado durante a sessão).</li>
+            <li>Logs de progresso de upload (descartados após a conclusão ou atualização da página).</li>
+        </ul>
+
+        <h2>3. Serviços de Terceiros e Uploads</h2>
+        <p>O sistema oferece uma funcionalidade de upload para servidores externos (Catbox/Litterbox) para facilitar o compartilhamento de arquivos grandes.</p>
+        <p><strong>Atenção:</strong> Ao utilizar a ferramenta de "Enviar Arquivo":</p>
+        <ul>
+            <li>O arquivo selecionado é enviado diretamente do seu dispositivo para os servidores do <strong>Catbox/Litterbox</strong>.</li>
+            <li>Não temos controle sobre a política de privacidade desses serviços externos.</li>
+            <li>Recomendamos não enviar documentos contendo informações sensíveis (PII, dados médicos ou senhas) para estes servidores públicos sem criptografia prévia.</li>
+            <li>Arquivos enviados podem gerar um link público acessível por qualquer pessoa que o possua.</li>
+        </ul>
+
+        <h2>4. Cookies e Tecnologias Locais</h2>
+        <p>Utilizamos armazenamento local do navegador apenas para o funcionamento técnico essencial da aplicação (manutenção de estado de login). Não utilizamos cookies para rastreamento publicitário ou comportamental.</p>
+
+        <h2>5. Segurança</h2>
+        <p>Embora implementemos práticas de segurança no código (como não armazenar credenciais em backend), lembre-se de que nenhum método de transmissão pela Internet é 100% seguro.</p>
+        <p>Seus tokens de acesso do Google são válidos apenas por um curto período e você pode revogar o acesso a este aplicativo a qualquer momento através das <a href="https://myaccount.google.com/permissions" target="_blank" style="color:var(--primary)">Configurações de Conta do Google</a>.</p>
+
+        <h2>6. Contato</h2>
+        <p>Se você tiver dúvidas sobre esta política de privacidade, entre em contato com a equipe de TI da SCMPG.</p>
+
+        <div class="footer">
+            &copy; 2026 Santa Casa de Misericórdia de Ponta Grossa. Todos os direitos reservados.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
