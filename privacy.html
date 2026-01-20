@@ -137,24 +137,25 @@
 
     <div class="card">
         <h1>Política de <span>Privacidade</span></h1>
-        <span class="subtitle">Última atualização: 15 de Janeiro de 2026</span>
+        <span class="subtitle">Última atualização: 20 de Janeiro de 2026</span>
 
         <p>Esta Política de Privacidade descreve como o sistema <strong>Drive SCMPG</strong> coleta, usa e compartilha suas informações ao utilizar nossos serviços de navegação de arquivos e upload.</p>
 
         <h2>1. Uso de Dados do Google (OAuth)</h2>
-        <p>O Drive SCMPG utiliza os serviços de API do Google para permitir que você visualize seus arquivos. O uso das informações recebidas das APIs do Google segue a <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" style="color:var(--primary)">Política de Dados do Usuário dos Serviços de API do Google</a>, incluindo os requisitos de uso limitado.</p>
+        <p>O Drive SCMPG utiliza os serviços de API do Google para autenticar você e permitir o acesso a recursos. O uso das informações recebidas das APIs do Google segue a <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" style="color:var(--primary)">Política de Dados do Usuário dos Serviços de API do Google</a>, incluindo os requisitos de uso limitado.</p>
         
         <ul>
-            <li><strong>Acesso:</strong> Solicitamos apenas o escopo <code>drive.readonly</code>. Isso nos permite listar nomes de arquivos, IDs e links de visualização.</li>
+            <li><strong>Acesso Limitado:</strong> Solicitamos apenas os escopos de perfil básico (<code>userinfo.profile</code> e <code>userinfo.email</code>) para identificação do usuário na interface.</li>
+            <li><strong>Acesso a Arquivos:</strong> Não solicitamos acesso restrito aos seus arquivos privados do Google Drive (o escopo <code>drive.readonly</code> foi descontinuado). O sistema acessa apenas pastas e arquivos configurados como públicos ou compartilhados com a organização.</li>
             <li><strong>Armazenamento:</strong> Não armazenamos seus arquivos ou tokens de acesso em nossos servidores. Toda a comunicação ocorre diretamente entre o seu navegador e os servidores do Google.</li>
-            <li><strong>Compartilhamento:</strong> Seus dados do Google Drive não são compartilhados com terceiros, exceto quando você explicitamente utiliza a função de "Upload Externo" (veja item 3).</li>
         </ul>
 
         <h2>2. Coleta de Informações</h2>
         <p>Este sistema opera principalmente como uma ferramenta "Client-Side" (executada no seu navegador). Não possuímos banco de dados próprio para retenção de dados pessoais.</p>
         <p>As únicas informações retidas temporariamente (na memória do seu navegador ou LocalStorage) são:</p>
         <ul>
-            <li>Tokens de autenticação (para manter você logado durante a sessão).</li>
+            <li>Nome e endereço de e-mail (apenas para exibição visual no painel "Conectado").</li>
+            <li>Tokens de autenticação (para manter a sessão ativa).</li>
             <li>Logs de progresso de upload (descartados após a conclusão ou atualização da página).</li>
         </ul>
 
